@@ -1,6 +1,6 @@
-# Timber framework
+# Vertx Api rest framework
 
-[![Build](https://travis-ci.org/CalabashFox/timber.svg?branch=v1.0)](https://travis-ci.org/CalabashFox/timber)
+[![Build](https://travis-ci.org/CalabashFox/vertx-restapi.svg?branch=v1.0)](https://travis-ci.org/CalabashFox/vertx-restapi)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-Timber is a reactive framework to construct Java api service
+RestApi is a rest layer to construct Java api service on Vertx
