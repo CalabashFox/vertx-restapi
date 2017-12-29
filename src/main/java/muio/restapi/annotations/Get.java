@@ -7,9 +7,9 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@HttpMethod(HttpMethod.GET)
 public @interface Get {
     String value();
-    boolean blocking() default false;
     boolean regex() default false;
     int priority() default 0;
     String consumes();

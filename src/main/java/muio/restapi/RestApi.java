@@ -1,16 +1,10 @@
 package muio.restapi;
 
 import com.google.inject.Injector;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Map;
 
 public class RestApi {
 
@@ -20,15 +14,18 @@ public class RestApi {
 
     private static final String PROXY_EXT = "$Proxy";
 
+    private AbstractRouteProcessor routeProcessor;
+
     private Router router;
 
     private RestApi(Vertx vertx, JsonObject jsonObject, Injector injector) {
         this.router = Router.router(vertx);
         if (injector == null) {
-            processRouter(new GuiceRouteProcessor(defaultConfig(jsonObject), injector));
+            routeProcessor = new GuiceRouteProcessor(defaultConfig(jsonObject), injector);
         } else {
-            processRouter(new RouteProcessor(defaultConfig(jsonObject)));
+            routeProcessor = new RouteProcessor(defaultConfig(jsonObject));
         }
+        processRouter(routeProcessor);
     }
 
     public static Router route(Vertx vertx, JsonObject jsonObject) {
@@ -40,41 +37,18 @@ public class RestApi {
     }
 
     private void processRouter(AbstractRouteProcessor processor) {
-        for (Map.Entry<RouteKey, Route> entry : processor.getRouteMap().entrySet()) {
-            RouteKey key = entry.getKey();
-            Route route = entry.getValue();
-            if (key.regex) {
-                if (key.methods == null) {
-                    router.routeWithRegex(key.path);
-                } else {
-                    // TODO blockinghandler
-                    Arrays.stream(key.methods)
-                            .forEach(method -> router.routeWithRegex(method, key.path)
-                                    .handler(ctx -> handler(ctx, route)));
-                }
-            } else {
-                if (key.methods == null) {
-                    router.route(key.path);
-                } else {
-                    Arrays.stream(key.methods)
-                            .forEach(method -> router.route(method, key.path)
-                                    .handler(ctx -> handler(ctx, route)));
-                }
-            }
-            // TODO make handler afterwards
-        }
+        processor.getEndpoints().forEach(endpoint -> endpoint.parseRoute(router));
     }
 
-    private <T> void handler(RoutingContext routingContext, Route route) {
-        /*ctx -> {
-            //String proxyName = controller.getName() + PROXY_EXT;
-            try {
-                //Class proxyClass = Class.forName(proxyName);
-                //Method proxyMethod = proxyClass.getMethod(method.toString(), RoutingContext.class);
-            } catch (Exception e) {
+    private <T> void handler(RoutingContext routingContext, Endpoint endpoint) {
+        String proxyName = endpoint.getClass().getName() + PROXY_EXT;
+        try {
+            Class proxyClass = Class.forName(proxyName);
+            Object proxy = routeProcessor.getProxyInstance(proxyClass);
+            //Method proxyMethod = proxyClass.getMethod(method.toString(), RoutingContext.class);
+        } catch (Exception e) {
 
-            }
-        };*/
+        }
     }
 
     private JsonObject defaultConfig(JsonObject config) {

@@ -12,6 +12,11 @@ public class GuiceRouteProcessor extends AbstractRouteProcessor {
     }
 
     @Override
+    protected Object getProxyInstance(Class<?> type) {
+        return injector.getInstance(type);
+    }
+
+    @Override
     protected <T> T getControllerInstance(Class<T> type) {
         return injector.getInstance(type);
     }

@@ -15,6 +15,19 @@ public class RouteProcessor extends AbstractRouteProcessor {
     }
 
     @Override
+    protected Object getProxyInstance(Class<?> type) {
+        try {
+            Constructor constructor = type.getConstructor();
+            return constructor.newInstance();
+        } catch (NoSuchMethodException e) {
+            log.error("constructor missing");
+        } catch (Exception e) {
+            log.error("instantiation failed.");
+        }
+        return null;
+    }
+
+    @Override
     protected <T> T getControllerInstance(Class<T> type) {
         try {
             Constructor<T> constructor = type.getConstructor();

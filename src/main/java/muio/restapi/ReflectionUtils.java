@@ -6,6 +6,7 @@ import io.vertx.core.logging.LoggerFactory;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -19,6 +20,21 @@ import java.util.Set;
 public class ReflectionUtils {
 
 	private static final Logger log = LoggerFactory.getLogger(ReflectionUtils.class);
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getAnnotationValue(Annotation annotation, String methodName, Class<T> returnType, T defaultValue) {
+		try {
+			Method method = annotation.annotationType().getMethod(methodName);
+			Object result = method.invoke(annotation);
+			if (result == null) {
+				return returnType.isPrimitive() ? defaultValue : null;
+			} else {
+				return (T) result;
+			}
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
 
 	public static Set<Class> getClassInPackage(String pkgName) {
 		Set<Class> classes = new HashSet<>();
