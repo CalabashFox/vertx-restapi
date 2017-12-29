@@ -6,19 +6,24 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
+import java.lang.invoke.MethodHandle;
+import java.util.HashMap;
+import java.util.Map;
+
 public class RestApi {
 
     public static final String API_PACKAGES = "api.packages";
     public static final String API_CONSUMES = "api.consumes";
     public static final String API_PRODUCES = "api.produces";
 
-    private static final String PROXY_EXT = "$Proxy";
-
     private AbstractRouteProcessor routeProcessor;
+
+    private InvocationHandler invocationHandler;
 
     private Router router;
 
     private RestApi(Vertx vertx, JsonObject jsonObject, Injector injector) {
+        this.invocationHandler = new InvocationHandler();
         this.router = Router.router(vertx);
         if (injector == null) {
             routeProcessor = new GuiceRouteProcessor(defaultConfig(jsonObject), injector);
@@ -37,18 +42,7 @@ public class RestApi {
     }
 
     private void processRouter(AbstractRouteProcessor processor) {
-        processor.getEndpoints().forEach(endpoint -> endpoint.parseRoute(router));
-    }
-
-    private <T> void handler(RoutingContext routingContext, Endpoint endpoint) {
-        String proxyName = endpoint.getClass().getName() + PROXY_EXT;
-        try {
-            Class proxyClass = Class.forName(proxyName);
-            Object proxy = routeProcessor.getProxyInstance(proxyClass);
-            //Method proxyMethod = proxyClass.getMethod(method.toString(), RoutingContext.class);
-        } catch (Exception e) {
-
-        }
+        processor.getEndpoints().forEach(endpoint -> endpoint.parseRoute(router, invocationHandler));
     }
 
     private JsonObject defaultConfig(JsonObject config) {

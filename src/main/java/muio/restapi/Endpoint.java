@@ -1,11 +1,18 @@
 package muio.restapi;
 
+import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Endpoint {
 
@@ -49,29 +56,32 @@ public class Endpoint {
         this.produces = produces;
     }
 
-    public Route parseRoute(Router router) {
-		/*RouteKey key = entry.getKey();
-		Route route = entry.getValue();
-		if (key.regex) {
-			if (key.methods == null) {
-				router.routeWithRegex(key.path);
-			} else {
-				// TODO blockinghandler
-				Arrays.stream(key.methods)
-						.forEach(method -> router.routeWithRegex(method, key.path)
-								.handler(ctx -> handler(ctx, route)));
-			}
-		} else {
-			if (key.methods == null) {
-				router.route(key.path);
-			} else {
-				Arrays.stream(key.methods)
-						.forEach(method -> router.route(method, key.path)
-								.handler(ctx -> handler(ctx, route)));
-			}
-		}*/
-        // TODO make handler afterwards
-        return null;
+    public Set<Route> parseRoute(final Router router, final InvocationHandler invocationHandler) {
+        if (path.isEmpty()) {
+            return Set.of(parseRoute(router.route(), invocationHandler));
+        } else if (methods.length == 0) {
+            return Set.of(parseRoute(regex ? router.routeWithRegex(path) : router.route(path), invocationHandler));
+        }
+        return Arrays.stream(methods)
+                .map(method -> regex ? router.routeWithRegex(method, path) : router.route(method, path))
+                .map(route -> parseRoute(route, invocationHandler))
+                .collect(Collectors.toSet());
+    }
+
+    private Route parseRoute(final Route route, final InvocationHandler invocationHandler) {
+        Handler<RoutingContext> handler = routingContext -> {
+            try {
+                invocationHandler.invoke(controller.getName(), method.getName(), routingContext);
+            } catch (Throwable t) {
+                routingContext.fail(t);
+            }
+        };
+        if (blocking) {
+            route.blockingHandler(handler);
+        } else {
+            route.handler(handler);
+        }
+        return route;
     }
 
     public HttpMethod[] getMethods() {

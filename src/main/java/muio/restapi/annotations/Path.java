@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Path {
-    HttpMethod[] httpMethods() default { HttpMethod.GET, HttpMethod.POST };
+    HttpMethod[] httpMethods() default {};
     String value();
     boolean regex() default false;
     int priority() default 0;
