@@ -1,13 +1,18 @@
 package io.mu.restapi;
 
 import com.google.inject.Injector;
+import io.mu.restapi.annotations.ApiGen;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class RestApi {
 
-    public static final String API_PACKAGES = "api.packages";
     public static final String API_CONSUMES = "api.consumes";
     public static final String API_PRODUCES = "api.produces";
 
@@ -20,12 +25,31 @@ public class RestApi {
     private RestApi(Vertx vertx, JsonObject jsonObject, Injector injector) {
         this.invocationHandler = new InvocationHandler();
         this.router = Router.router(vertx);
+        Set<Class> controllers = getControllers();
         if (injector == null) {
-            routeProcessor = new GuiceRouteProcessor(defaultConfig(jsonObject), injector);
+            routeProcessor = new GuiceRouteProcessor(controllers, injector);
         } else {
-            routeProcessor = new RouteProcessor(defaultConfig(jsonObject));
+            routeProcessor = new RouteProcessor(controllers);
         }
         processRouter(routeProcessor);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<Class> getControllers() {
+        return Stream.of(Package.getPackages())
+                .filter(pkg -> pkg.isAnnotationPresent(ApiGen.class))
+                .map(pkg -> ReflectionUtils.getClassInPackage(pkg.getName()))
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+    }
+
+
+    public static Router route(Vertx vertx) {
+        return new RestApi(vertx, new JsonObject(), null).router;
+    }
+
+    public static Router route(Vertx vertx, Injector injector) {
+        return new RestApi(vertx, new JsonObject(), injector).router;
     }
 
     public static Router route(Vertx vertx, JsonObject jsonObject) {

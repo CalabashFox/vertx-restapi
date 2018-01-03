@@ -15,6 +15,8 @@ import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,7 +26,7 @@ public abstract class AbstractRouteProcessor {
 
     private static final String DELIMITER = ";";
 
-    private Set<Endpoint> endpoints;
+    private Set<Endpoint> endpoints = new HashSet<>();
 
     private JsonObject config;
 
@@ -32,26 +34,8 @@ public abstract class AbstractRouteProcessor {
 
     protected abstract <T> T getControllerInstance(Class<T> type);
 
-    public AbstractRouteProcessor(Set<? extends Element> elements) {
-        elements.forEach(e -> processController(e.getClass()));
-    }
-
-    AbstractRouteProcessor(JsonObject config) {
-        processPackages(getPackages(config));
-    }
-
-    private void processPackages(String[] packages) {
-        Arrays.stream(packages)
-                .map(ReflectionUtils::getClassInPackage)
-                .flatMap(Set::stream)
-                .forEach(this::processController);
-    }
-
-    private String[] getPackages(JsonObject config) {
-        if (!config.containsKey(RestApi.API_PACKAGES)) {
-            throw new RestApiException(RestApi.API_PACKAGES + " not specified.");
-        }
-        return config.getString(RestApi.API_PACKAGES).split(DELIMITER);
+    AbstractRouteProcessor(Set<Class> controllers) {
+        controllers.forEach(this::processController);
     }
 
     private <T> void processController(Class<T> type) {
@@ -69,7 +53,7 @@ public abstract class AbstractRouteProcessor {
         endpoints = Arrays.stream(type.getMethods())
                 .filter(this::containsEndpoint)
                 .map(method -> getEndPoint(type, instance, method, classLevelEndpoint))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(HashSet::new));
         log.debug("Controller {0} loaded", type);
     }
 

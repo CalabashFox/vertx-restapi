@@ -3,12 +3,15 @@ package io.mu.restapi;
 import com.google.inject.Injector;
 import io.vertx.core.json.JsonObject;
 
+import java.util.List;
+import java.util.Set;
+
 public class GuiceRouteProcessor extends AbstractRouteProcessor {
 
     private Injector injector;
 
-    GuiceRouteProcessor(JsonObject config, Injector injector) {
-        super(config);
+    GuiceRouteProcessor(Set<Class> controllers, Injector injector) {
+        super(controllers);
     }
 
     @Override

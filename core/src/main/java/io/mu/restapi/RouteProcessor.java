@@ -5,13 +5,15 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
+import java.util.Set;
 
 public class RouteProcessor extends AbstractRouteProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(RouteProcessor.class);
 
-    RouteProcessor(JsonObject config) {
-        super(config);
+    RouteProcessor(Set<Class> controllers) {
+        super(controllers);
     }
 
     @Override

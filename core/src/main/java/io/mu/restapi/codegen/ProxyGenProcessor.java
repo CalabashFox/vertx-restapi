@@ -1,5 +1,7 @@
 package io.mu.restapi.codegen;
 
+import io.mu.restapi.Endpoint;
+import io.mu.restapi.annotations.PathVariable;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.mu.restapi.annotations.ApiGen;
@@ -8,18 +10,30 @@ import io.mu.restapi.annotations.Path;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedOptions;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//@SupportedOptions({ "codegen.output" })
-//@SupportedSourceVersion(SourceVersion.RELEASE_9)
+@SupportedOptions({ "apigen.output" })
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class ProxyGenProcessor extends AbstractProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(ProxyGenProcessor.class);
@@ -43,11 +57,16 @@ public class ProxyGenProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(Path.class);
-        elements.forEach(System.out::println);
-        System.out.println("???");
-        //CodegenRouteProcessor processor = new CodegenRouteProcessor(elements);
-        //Set<Endpoint> endpoints = processor.getEndpoints();
+        List<? extends Element> annotatedClasses = roundEnv.getElementsAnnotatedWith(ApiGen.class)
+                .stream()
+                .filter(e -> e.getKind() == ElementKind.PACKAGE)
+                .map(e -> (PackageElement) e)
+                .map(PackageElement::getEnclosedElements)
+                .flatMap(List::stream)
+                .filter(e -> e.getKind() == ElementKind.CLASS)
+                .collect(Collectors.toList());
+        List<ClassModel> classModels = annotatedClasses.stream().map(ClassModel::new).collect(Collectors.toList());
+        classModels.forEach(System.out::println);
         return false;
     }
 

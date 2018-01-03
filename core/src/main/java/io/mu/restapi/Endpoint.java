@@ -24,7 +24,7 @@ public class Endpoint {
     private final Method method;
     private final Object instance;
 
-    public Endpoint(HttpMethod[] methods, String path, Boolean blocking,
+    Endpoint(HttpMethod[] methods, String path, Boolean blocking,
                     String consumes, String produces) {
         this.controller = null;
         this.method = null;
@@ -38,7 +38,7 @@ public class Endpoint {
         this.produces = produces;
     }
 
-    public Endpoint(Class<?> controller, Method method, Object instance,
+    Endpoint(Class<?> controller, Method method, Object instance,
                     HttpMethod[] methods, String path, Boolean blocking, boolean regex,
                     int order, String consumes, String produces) {
         this.controller = controller;
