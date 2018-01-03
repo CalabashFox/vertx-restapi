@@ -4,3 +4,5 @@ dict.dic
 /core/core.iml
 /vertx-restapi.iml
 /out/
+/sample/target/
+/core/target/
