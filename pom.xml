@@ -6,9 +6,14 @@
 
     <groupId>mu</groupId>
     <artifactId>vertx-restapi</artifactId>
+    <packaging>pom</packaging>
     <version>0.1.0</version>
+    <modules>
+        <module>core</module>
+        <module>sample</module>
+    </modules>
 
-    <name>router</name>
+    <name>vertx-restapi</name>
     <url>https://github.com/calabashfox/vertx-restapi</url>
     <description>Vert.x router</description>
 
@@ -40,6 +45,7 @@
         <test.junit.version>5.1.0-M1</test.junit.version>
         <vertx.version>3.5.0</vertx.version>
         <guice.version>4.1.0</guice.version>
+        <mvel.version>2.4.0.Final</mvel.version>
     </properties>
 
     <dependencyManagement>
@@ -55,12 +61,10 @@
     </dependencyManagement>
 
     <dependencies>
-
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
@@ -73,9 +77,8 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-codegen</artifactId>
-            <optional>true</optional>
+            <classifier>processor</classifier>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
         <dependency>
             <groupId>com.google.inject</groupId>
@@ -83,8 +86,12 @@
             <version>${guice.version}</version>
             <optional>true</optional>
         </dependency>
-
-
+        <!-- https://mvnrepository.com/artifact/org.mvel/mvel2 -->
+        <dependency>
+            <groupId>org.mvel</groupId>
+            <artifactId>mvel2</artifactId>
+            <version>${mvel.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -101,6 +108,5 @@
         </dependency>
 
     </dependencies>
-
 
 </project>

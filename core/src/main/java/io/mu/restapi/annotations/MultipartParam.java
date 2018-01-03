@@ -1,11 +1,13 @@
-package muio.restapi.annotations;
+package io.mu.restapi.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Blocking {
+public @interface MultipartParam {
+
+	boolean optional() default false;
 }
