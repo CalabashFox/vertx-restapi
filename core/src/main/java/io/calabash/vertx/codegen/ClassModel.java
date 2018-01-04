@@ -47,6 +47,10 @@ public class ClassModel {
         }*/
     }
 
+    public String getFullQualifiedName() {
+        return pkg + "." + name;
+    }
+
     public List<String> getImportedTypes() {
         return importedTypes;
     }

@@ -5,5 +5,6 @@ module io.calabash.vertx {
     requires java.compiler;
     requires vertx.core;
     requires vertx.web;
+    requires mvel2;
 }
 

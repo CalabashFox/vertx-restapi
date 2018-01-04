@@ -3,6 +3,9 @@ package io.calabash.vertx.codegen;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.calabash.vertx.annotation.ApiGen;
+import org.mvel2.templates.CompiledTemplate;
+import org.mvel2.templates.TemplateCompiler;
+import org.mvel2.templates.TemplateRuntime;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -16,6 +19,10 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +38,7 @@ public class ProxyGenProcessor extends AbstractProcessor {
 
     private File outputDirectory;
     private Map<String, String> generatedProxies = new HashMap<>();
+    private CompiledTemplate proxyTemplate;
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -44,6 +52,7 @@ public class ProxyGenProcessor extends AbstractProcessor {
         super.init(processingEnv);
         System.out.println("???");
         generatedProxies.clear();
+        proxyTemplate = TemplateCompiler.compileTemplate("proxy.templ");
     }
 
     @Override
@@ -56,9 +65,36 @@ public class ProxyGenProcessor extends AbstractProcessor {
                 .flatMap(List::stream)
                 .filter(e -> e.getKind() == ElementKind.CLASS)
                 .collect(Collectors.toList());
-        List<ClassModel> classModels = annotatedClasses.stream().map(ClassModel::new).collect(Collectors.toList());
-        classModels.forEach(System.out::println);
+
+        Map<String, String> proxyOutputMap = annotatedClasses
+                .stream()
+                .map(ClassModel::new)
+                .collect(Collectors.toMap(ClassModel::getFullQualifiedName, this::generateProxy));
+        createOutputFolder();
+        proxyOutputMap.forEach(this::writeProxyClasses);
         return false;
+    }
+
+    private String generateProxy(ClassModel classModel) {
+        Map<String, Object> templateParams = Map.of("classModel", classModel);
+        return (String) TemplateRuntime.execute(proxyTemplate, templateParams);
+    }
+
+    private void writeProxyClasses(String fqn, String proxyClass) {
+        try {
+            String fqnPath = fqn.replace(".", File.separator);
+            Path pkgPath = Paths.get(fqn.substring(0, fqn.lastIndexOf(File.separator)));
+            if (!Files.exists(pkgPath)) {
+                Files.createDirectories(pkgPath);
+            }
+            Path proxyPath = Paths.get(fqnPath);
+            if (Files.exists(proxyPath)) {
+                Files.delete(proxyPath);
+            }
+            Files.write(proxyPath, proxyClass.getBytes());
+        } catch (IOException e) {
+            log.error(e);
+        }
     }
 
     private void createOutputFolder() {

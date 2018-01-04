@@ -1,11 +1,11 @@
-@{package + '.proxy'};
+@{classModel.package + '.proxy'};
 
-@foreach{importedType : importedTypes}
+@foreach{importedType : classModel.importedTypes}
 import @{importedType};
 @end{}
 
 public class @{classModel.name + 'Proxy'} @{'{'}
-  @foreach{method : methods}
+  @foreach{method : classModel.methods}
   public static void @{method.name}(@{method.routingContextType} routingContext) @{'{'}
 
   @{'}'}
