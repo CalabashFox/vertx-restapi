@@ -1,22 +1,20 @@
-package io.mu.restapi;
+package io.calabash.vertx;
 
+import io.calabash.vertx.annotation.Blocking;
+import io.calabash.vertx.annotation.Delete;
+import io.calabash.vertx.annotation.Post;
+import io.calabash.vertx.annotation.Put;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.mu.restapi.annotations.Blocking;
-import io.mu.restapi.annotations.Delete;
-import io.mu.restapi.annotations.HttpMethod;
-import io.mu.restapi.annotations.Post;
-import io.mu.restapi.annotations.Put;
-import io.mu.restapi.annotations.Get;
-import io.mu.restapi.annotations.Path;
+import io.calabash.vertx.annotation.HttpMethod;
+import io.calabash.vertx.annotation.Get;
+import io.calabash.vertx.annotation.Path;
 
-import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

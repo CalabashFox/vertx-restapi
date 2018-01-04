@@ -1,11 +1,9 @@
-package io.mu.restapi;
+package io.calabash.vertx;
 
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.util.List;
 import java.util.Set;
 
 public class RouteProcessor extends AbstractRouteProcessor {

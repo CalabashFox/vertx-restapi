@@ -1,4 +1,4 @@
 @ApiGen
 package io.i;
 
-import io.mu.restapi.annotations.ApiGen;
+import io.calabash.vertx.annotation.ApiGen;

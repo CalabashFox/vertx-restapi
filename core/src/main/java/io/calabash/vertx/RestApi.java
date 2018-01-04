@@ -1,12 +1,11 @@
-package io.mu.restapi;
+package io.calabash.vertx;
 
 import com.google.inject.Injector;
-import io.mu.restapi.annotations.ApiGen;
+import io.calabash.vertx.annotation.ApiGen;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

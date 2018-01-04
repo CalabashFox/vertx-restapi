@@ -1,6 +1,6 @@
 package io.i;
 
-import io.mu.restapi.annotations.Path;
+import io.calabash.vertx.annotation.Path;
 
 @Path
 public class B {

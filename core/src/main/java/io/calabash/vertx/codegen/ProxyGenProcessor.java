@@ -1,11 +1,8 @@
-package io.mu.restapi.codegen;
+package io.calabash.vertx.codegen;
 
-import io.mu.restapi.Endpoint;
-import io.mu.restapi.annotations.PathVariable;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.mu.restapi.annotations.ApiGen;
-import io.mu.restapi.annotations.Path;
+import io.calabash.vertx.annotation.ApiGen;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -15,14 +12,8 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 import java.io.File;
 import java.util.HashMap;

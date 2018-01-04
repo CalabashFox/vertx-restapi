@@ -1,4 +1,4 @@
-package io.mu.restapi;
+package io.calabash.vertx;
 
 import java.util.function.Predicate;
 

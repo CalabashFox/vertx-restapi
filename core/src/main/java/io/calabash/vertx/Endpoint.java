@@ -1,4 +1,4 @@
-package io.mu.restapi;
+package io.calabash.vertx;
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;

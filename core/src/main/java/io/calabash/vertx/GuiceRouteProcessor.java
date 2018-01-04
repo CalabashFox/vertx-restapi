@@ -1,9 +1,7 @@
-package io.mu.restapi;
+package io.calabash.vertx;
 
 import com.google.inject.Injector;
-import io.vertx.core.json.JsonObject;
 
-import java.util.List;
 import java.util.Set;
 
 public class GuiceRouteProcessor extends AbstractRouteProcessor {
